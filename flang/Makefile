@@ -45,4 +45,4 @@ clean:
 	cmake --build build --target clean
 
 f18-llvm-project:
-	git clone -b fix-webr --single-branch https://github.com/lionel-/f18-llvm-project
+	git clone --single-branch -b fix-webr --depth=1 https://github.com/lionel-/f18-llvm-project
