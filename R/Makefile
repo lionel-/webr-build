@@ -146,6 +146,7 @@ $(BUILD)/state/r-stage2-patched: $(BUILD)/state/r-stage1
 	( \
 	  cd $(R_SOURCE); \
 	  patch --ignore-whitespace -p1 < $(R_PATCHES)/stage2.patch; \
+	  patch -p1 < $(ROOT)/patches/0001-Fix-signature-mismatch-in-tre-xmalloc.c.patch; \
 	)
 	cat $(ROOT)/config-stat-time.h >> $(R_SOURCE)/build/src/include/config.h
 	sed -i "" "s/$(R_CPU)/wasm32/g" $(R_SOURCE)/build/src/include/config.h

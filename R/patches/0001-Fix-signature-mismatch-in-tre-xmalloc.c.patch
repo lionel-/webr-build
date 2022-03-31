@@ -1,0 +1,25 @@
+From df13c51acdd70eaf8da8e44740b76216aa8ce5b9 Mon Sep 17 00:00:00 2001
+From: Lionel Henry <lionel.hry@gmail.com>
+Date: Thu, 31 Mar 2022 09:48:51 +0200
+Subject: [PATCH] Fix signature mismatch in `tre/xmalloc.c`
+
+---
+ src/extra/tre/xmalloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/extra/tre/xmalloc.c b/src/extra/tre/xmalloc.c
+index b9f2723adf..3b1920895b 100644
+--- a/src/extra/tre/xmalloc.c
++++ b/src/extra/tre/xmalloc.c
+@@ -23,7 +23,7 @@
+ #include "xmalloc.h"
+ 
+ /* fake definition */
+-extern void Rf_error(const char *str);
++extern void Rf_error(const char *, ...);
+ #define assert(a) R_assert(a)
+ 
+ static void assert(int expr)
+-- 
+2.31.0
+
