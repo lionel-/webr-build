@@ -2,3 +2,5 @@ dist/
 local/
 R/build/
 R/download/
+flang/build/
+flang/f18-llvm-project/

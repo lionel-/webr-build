@@ -12,6 +12,8 @@ DIST=$(WEBR_ROOT)/dist
 EMFC=$(WEBR_ROOT)/tools/emfc
 LOCAL_CFLAGS="$(CFLAGS) -fPIC -Oz"
 
+LLVM_BUILD_DIR = $(WEBR_ROOT)/flang/build
+
 R_VERSION=4.1.2
 R_TARBALL=$(DOWNLOAD)/R-$(R_VERSION).tar.gz
 R_SOURCE=$(BUILD)/R-$(R_VERSION)
@@ -39,7 +41,7 @@ clean-state:
 	rm -f $(BUILD)/state
 
 .PHONY: R
-R: PCRE XZ $(BUILD)/state/r-stage2
+R: $(LLVM_BUILD_DIR)/bin/flang-new PCRE XZ $(BUILD)/state/r-stage2
 
 $(DIST)/index.html:
 	cp $(WEBR_ROOT)/loader/repl.html $(DIST)/index.html
@@ -164,6 +166,10 @@ $(BUILD)/state/r-stage2-patched: $(BUILD)/state/r-stage1
 $(R_TARBALL):
 	mkdir -p $(DOWNLOAD)
 	wget $(R_URL) -O $@
+
+
+$(LLVM_BUILD_DIR)/bin/flang-new:
+	cd $(WEBR_ROOT)/flang && make && make install
 
 
 .PHONY: XZ
