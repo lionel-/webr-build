@@ -36,7 +36,7 @@ IN_BASE="${IN%.*}"
 OUT=${OUT-${IN_BASE}.o}
 OUT_BASE="${OUT%.*}"
 
-${BBC} "$IN" -o - | \
+${BBC} --math-runtime=llvm-pgmath "$IN" -o - | \
     ${TCO} --external-name-interop | \
     ${TCO} --target=wasm32-unknown-emscripten > \
     "${OUT_BASE}.ll"
