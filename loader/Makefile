@@ -5,5 +5,5 @@ BASE_URL ?= "./"
 
 .PHONY: all
 all:
-	sed -e "s|@@BASE_URL@@|$(BASE_URL)|" webR.js > $(DIST)/webR.js
+	sed -e "s|@@BASE_URL@@|$(BASE_URL)|" worker.js > $(DIST)/worker.js
 	cp repl.html $(DIST)/index.html

@@ -114,79 +114,51 @@
         history: true
     });
     term.echo("R is downloading, please wait...");
-    var re = /^___terminal::/;
-    // XHR proxy that handle methods from fetch in C
-    window.XMLHttpRequest = (function(xhr) {
-        return function() {
-            var url;
-            var props = {
-                readyState: 4,
-                status: 200
-            };
-            var enc = new TextEncoder("utf-8");
-            return new Proxy(new xhr(), {
-                get: function(target, name) {
-                    if (url && ['response', 'responseText', 'status', 'readyState'].indexOf(name) != -1) {
-                        if (name == 'response') {
-                            var response = enc.encode(props.responseText);
-                            return response;
-                        }
-                        return props[name];
-                    } else if (name == 'open') {
-                        return function(method, open_url) {
-                            if (open_url.match(re)) {
-                                url = open_url;
-                            } else {
-                                return target[name].apply(target, arguments);
-                            }
-                        };
-                    } else if (name == 'send') {
-                        return function(data) {
-                            if (url) {
-                                var payload = url.split('::');
-                                if (payload[1] == 'read') {
-                                    term.read(
-                                        payload.length > 2 ? payload[2] : '',
-                                        function(text) {
-                                            props.responseText = text;
-                                            target.onload();
-                                        }
-                                    );
-                                    term.history().enable();
-                                }
-                            } else {
-                                return target[name].apply(target, arguments);
-                            }
-                        };
-                    }
-                    return target[name];
-                },
-                set: function(target, name, value) {
-                    target[name] = value;
-                }
-            });
-        };
-    })(window.XMLHttpRequest);
 </script>
-<script type="text/javascript" src="webR.js"></script>
 <script>
-    loadWebR({
-        Rargs: [],
-        ENV: {
-            R_NSIZE: "1000000",
-            R_VSIZE: "64M",
-            R_HOME: "/usr/lib/R",
-            R_ENABLE_JIT: "0",
-            R_DEFAULT_DEVICE: "canvas",
-            COLORTERM: "truecolor",
-        },
-        stdout: function(text) {
-            term.echo(text);
-        },
-        stderr: function(text) {
-            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-            term.error(text);
-        },
-    });
+  var worker = new Worker('worker.js')
+
+  worker.onmessage = function(msg) {
+      var event = msg.data.event;
+      var data = msg.data.data;
+
+      switch (event) {
+      case 'stdout':
+          term.echo(data);
+          break;
+      case 'stderr':
+          if (arguments.length > 1) {
+              data = Array.prototype.slice.call(arguments).join(' ');
+          }
+          term.error(data);
+          break;
+      case 'read':
+          term.read(
+              data.text,
+              function(text) {
+                  var resp = { text: text, data: data };
+                  worker.postMessage({ event: 'input', data: resp });
+              }
+          );
+          term.history().enable();
+          break;
+      default:
+          console.log('Undefined event in main thread');
+          break;
+      }
+  }
+
+  var options = {
+      Rargs: [],
+      ENV: {
+          R_NSIZE: '1000000',
+          R_VSIZE: '64M',
+          R_HOME: '/usr/lib/R',
+          R_ENABLE_JIT: '0',
+          R_DEFAULT_DEVICE: 'canvas',
+          COLORTERM: 'truecolor',
+      }
+  }
+  worker.postMessage({ event: 'init', data: options })
 </script>
 </html>
