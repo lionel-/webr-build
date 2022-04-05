@@ -48,18 +48,6 @@ function loadWebR(options){
             }
             return(window.Module._run_R_from_JS(allocate(intArrayFromString(code), 0), code.length));
         },
-        getFileData: async function(name){
-            var FS = window.FS;
-            var size = FS.stat(name).size;
-            var stream = FS.open(name, 'r');
-            var buf = new Uint8Array(size);
-            FS.read(stream, buf, 0, size, 0);
-            FS.close(stream);
-            return buf;
-        },
-        putFileData: async function(name, data){
-            window.Module['FS_createDataFile']('/', name, data, true, true, true);
-        },
         loadedPackages: [],
         loadPackages: function(packages){
             return packages.reduce(function(curPromise, packageName) {
