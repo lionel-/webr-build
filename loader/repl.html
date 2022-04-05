@@ -148,22 +148,8 @@
                                     term.read(
                                         payload.length > 2 ? payload[2] : '',
                                         function(text) {
-                                            var reg = /(library|require)\(['"]?(.*?)['"]?\)/g;
-                                            var res;
-                                            var packages = [];
-                                            while((res = reg.exec(text)) !== null) {
-                                                packages.push(res[2]);
-                                            }
-                                            webRPromise.then( function(webR) {
-                                                webR.loadPackages(packages).then(_ => {
-                                                    props.responseText = text;
-                                                    target.onload();
-                                                }, function(e) {
-                                                    console.log("An error occured loading one or more packages. Perhaps they do not exist in webR-ports.");
-                                                    props.responseText = text;
-                                                    target.onload()
-                                                });
-                                            });
+                                            props.responseText = text;
+                                            target.onload();
                                         }
                                     );
                                     term.history().enable();
@@ -184,14 +170,8 @@
 </script>
 <script type="text/javascript" src="webR.js"></script>
 <script>
-    var webRPromise = loadWebR({
+    loadWebR({
         Rargs: [],
-        runtimeInitializedCB: function(){
-            term.clear();
-        },
-        loadingPackageCB: function(packageName){
-            term.echo("Downloading webR package: " + packageName);
-        },
         ENV: {
             R_NSIZE: "1000000",
             R_VSIZE: "64M",
